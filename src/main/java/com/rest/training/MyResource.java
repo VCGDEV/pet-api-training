@@ -1,4 +1,4 @@
-package com.hcl.training;
+package com.rest.training;
 
 import java.util.Collections;
 import java.util.Map;
