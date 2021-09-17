@@ -3,6 +3,14 @@ package com.rest.training.dto;
 public class TagDTO {
 	private Integer id;
 	private String name;
+
+	public TagDTO() {}
+
+	public TagDTO(Integer id, String name) {
+		this.id = id;
+		this.name = name;
+	}
+
 	public Integer getId() {
 		return id;
 	}
