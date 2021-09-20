@@ -1,7 +1,11 @@
 package com.rest.training.dto;
 
+import javax.validation.constraints.NotEmpty;
+
 public class CategoryDTO {
 	private Integer id;
+
+	@NotEmpty(message = "Please provide category name")
 	private String name;
 	
 	public Integer getId() {

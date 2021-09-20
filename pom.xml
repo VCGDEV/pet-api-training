@@ -54,7 +54,11 @@
 	      <groupId>org.glassfish.hk2</groupId>
 	      <artifactId>hk2-metadata-generator</artifactId>
 	      <version>2.6.1</version>
-	  </dependency> 
+	    </dependency> 
+        <dependency>
+            <groupId>org.glassfish.jersey.ext</groupId>
+            <artifactId>jersey-bean-validation</artifactId>
+        </dependency>  
     </dependencies>
     <properties>
         <jersey.version>2.34</jersey.version>
