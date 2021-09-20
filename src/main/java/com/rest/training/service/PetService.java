@@ -6,6 +6,7 @@ import org.jvnet.hk2.annotations.Service;
 
 import com.rest.training.domain.Pet;
 import com.rest.training.dto.PetDTO;
+import com.rest.training.exception.PetNotFoundException;
 import com.rest.training.mappers.PetMapper;
 import com.rest.training.repo.PetRepository;
 
@@ -24,8 +25,10 @@ public class PetService {
 		return mapper.fromEntity(pet);
 	}
 
-	public PetDTO findById(Integer id) {
-		return mapper.fromEntity(repo.findById(id));
+	public PetDTO findById(Integer id) throws PetNotFoundException {
+		return repo.findById(id)
+			.map(mapper::fromEntity)
+			.orElseThrow(PetNotFoundException::new);
 	}
 	
 }
