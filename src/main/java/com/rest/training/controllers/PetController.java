@@ -1,6 +1,7 @@
 package com.rest.training.controllers;
 
 import javax.inject.Inject;
+import javax.validation.Valid;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
@@ -24,7 +25,7 @@ public class PetController {
 	@POST
 	@Produces(MediaType.APPLICATION_JSON)
 	@Consumes(MediaType.APPLICATION_JSON)
-	public Response addPet(PetDTO petDTO) {
+	public Response addPet(@Valid PetDTO petDTO) {
 		PetDTO resultDTO = petService.addPet(petDTO);
 		return Response.status(Status.CREATED)
 				.entity(resultDTO)
