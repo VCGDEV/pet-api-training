@@ -1,5 +1,8 @@
 package com.rest.training.domain;
 
+import lombok.AllArgsConstructor;
+
+@AllArgsConstructor
 public class Tag {
 	private Integer id;
 	private String name;

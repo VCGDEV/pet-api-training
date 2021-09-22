@@ -3,11 +3,14 @@ package com.rest.training.controllers;
 import javax.inject.Inject;
 import javax.validation.Valid;
 import javax.ws.rs.Consumes;
+import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
+import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
+import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
@@ -39,4 +42,31 @@ public class PetController {
 		return Response.ok(petService.findById(id))
 			.build();
 	}
+
+	
+	@GET
+	@Produces(MediaType.APPLICATION_JSON)
+	public Response findAll(@QueryParam(value = "name")String name) {
+		return Response.status(Status.OK)
+				.entity(petService.find(name)).build();
+	}
+
+	@Path("/{id}")
+	@DELETE
+	@Produces(MediaType.APPLICATION_JSON)
+	public Response deleteById(@PathParam(value = "id")Integer id) throws PetNotFoundException {
+		petService.deleteById(id);
+		return Response.noContent()
+			.build();
+	}
+	
+	@Path("/{id}")
+	@PUT
+	@Produces(MediaType.APPLICATION_JSON)
+	public Response updatePet(@PathParam(value = "id")Integer id,
+			@Valid PetDTO petDTO) throws PetNotFoundException {
+		return Response.ok(petService.updatePet(id, petDTO))
+			.build();
+	}
+
 }

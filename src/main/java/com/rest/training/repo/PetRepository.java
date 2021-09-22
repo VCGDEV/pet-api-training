@@ -1,9 +1,11 @@
 package com.rest.training.repo;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.stream.Collectors;
 
 import com.rest.training.domain.Pet;
 
@@ -27,5 +29,29 @@ public class PetRepository {
 
 	public Optional<Pet> findById(Integer id) {
 		return Optional.ofNullable(petsDB.get(id));
+	}
+
+	public boolean existsById(Integer id) {
+		return petsDB.containsKey(id);
+	}
+
+	public void deleteById(Integer id) {
+		petsDB.remove(id);;
+	}
+
+	public Pet update(Pet pet) {
+		petsDB.put(pet.getId(), pet);
+		// agregar logica para verificar ids de categoria y tags
+		return pet;
+	}
+
+	public List<Pet> findAll(){
+		return petsDB.values().stream().collect(Collectors.toList());
+	}
+
+	public List<Pet> findByName(String name){
+		return petsDB.values()
+			.stream()
+			.filter(p -> p.getName().equalsIgnoreCase(name)).collect(Collectors.toList());
 	}
 }
