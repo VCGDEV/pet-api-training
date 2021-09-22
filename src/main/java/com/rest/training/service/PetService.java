@@ -1,6 +1,9 @@
 package com.rest.training.service;
 
 
+import java.util.List;
+import java.util.stream.Collectors;
+
 import javax.inject.Inject;
 import org.jvnet.hk2.annotations.Service;
 
@@ -29,6 +32,37 @@ public class PetService {
 		return repo.findById(id)
 			.map(mapper::fromEntity)
 			.orElseThrow(PetNotFoundException::new);
+	}
+
+	public void deleteById(Integer id) throws PetNotFoundException {
+		if(!repo.existsById(id)) {
+			throw new PetNotFoundException();
+		} else {
+			repo.deleteById(id);
+		}
+	}
+
+	public PetDTO updatePet(Integer id, PetDTO dto) throws PetNotFoundException {
+		if(!repo.existsById(id)) {
+			throw new PetNotFoundException();
+		} else {
+			Pet toSave = mapper.fromDTO(dto);
+			toSave.setId(id);
+			Pet pet = repo.update(toSave);
+			return mapper.fromEntity(pet);
+		}
+	}
+
+	public List<PetDTO> find(String name){
+		if(name != null && !name.trim().isEmpty())	{
+			return repo.findByName(name).stream()
+					.map(mapper::fromEntity)
+					.collect(Collectors.toList());
+		} else {
+			return repo.findAll().stream()
+					.map(mapper::fromEntity)
+					.collect(Collectors.toList());
+		}
 	}
 	
 }
