@@ -1,5 +1,7 @@
 package com.rest.training.controllers;
 
+import java.util.List;
+
 import javax.inject.Inject;
 import javax.validation.Valid;
 import javax.ws.rs.Consumes;
@@ -11,11 +13,14 @@ import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
+import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
+import javax.ws.rs.core.UriInfo;
 import javax.ws.rs.core.Response.Status;
-
 import com.rest.training.dto.PetDTO;
+import com.rest.training.dto.hateoas.LinkVisitor;
+import com.rest.training.dto.hateoas.LinkVisitorImpl;
 import com.rest.training.exception.PetNotFoundException;
 import com.rest.training.service.PetService;
 
@@ -24,12 +29,16 @@ public class PetController {
 
 	@Inject
 	private PetService petService;
+
+	@Context//
+	private UriInfo uriInfo;
 	
 	@POST
 	@Produces(MediaType.APPLICATION_JSON)
 	@Consumes(MediaType.APPLICATION_JSON)
 	public Response addPet(@Valid PetDTO petDTO) {
 		PetDTO resultDTO = petService.addPet(petDTO);
+		resultDTO.accept(new LinkVisitorImpl(uriInfo));
 		return Response.status(Status.CREATED)
 				.entity(resultDTO)
 				.build();
@@ -39,7 +48,9 @@ public class PetController {
 	@GET
 	@Produces(MediaType.APPLICATION_JSON)
 	public Response findById(@PathParam(value = "id")Integer id) throws PetNotFoundException {
-		return Response.ok(petService.findById(id))
+		PetDTO dto = petService.findById(id);
+		dto.accept(new LinkVisitorImpl(uriInfo));
+		return Response.ok(dto)
 			.build();
 	}
 
@@ -47,8 +58,11 @@ public class PetController {
 	@GET
 	@Produces(MediaType.APPLICATION_JSON)
 	public Response findAll(@QueryParam(value = "name")String name) {
+		List<PetDTO> pets = petService.find(name);
+		LinkVisitor visitor = new LinkVisitorImpl(uriInfo);
+		pets.forEach(p -> p.accept(visitor));
 		return Response.status(Status.OK)
-				.entity(petService.find(name)).build();
+				.entity(pets).build();
 	}
 
 	@Path("/{id}")
@@ -65,8 +79,11 @@ public class PetController {
 	@Produces(MediaType.APPLICATION_JSON)
 	public Response updatePet(@PathParam(value = "id")Integer id,
 			@Valid PetDTO petDTO) throws PetNotFoundException {
-		return Response.ok(petService.updatePet(id, petDTO))
+		PetDTO updatedDTO = petService.updatePet(id, petDTO);
+		updatedDTO.accept(new LinkVisitorImpl(uriInfo)); 
+		return Response.ok(updatedDTO)
 			.build();
 	}
+
 
 }
