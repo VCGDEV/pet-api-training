@@ -7,6 +7,9 @@ import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
 
+import com.rest.training.dto.hateoas.LinkItem;
+import com.rest.training.dto.hateoas.LinkVisitor;
+
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -16,7 +19,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class PetDTO {
+public class PetDTO extends BaseDTO implements LinkItem {
 
 	private Integer id;
 	@NotBlank(message = "40006")
@@ -31,5 +34,9 @@ public class PetDTO {
 	@NotEmpty(message = "Provide at least one Tag")
 	private List<TagDTO> tags;
 	
+	@Override
+	public void accept(LinkVisitor visitor) {
+		visitor.visit(this);
+	}
 	
 }
