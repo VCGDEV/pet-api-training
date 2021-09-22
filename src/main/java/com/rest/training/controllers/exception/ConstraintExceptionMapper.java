@@ -10,15 +10,25 @@ import javax.ws.rs.core.Response.Status;
 import javax.ws.rs.ext.ExceptionMapper;
 import javax.ws.rs.ext.Provider;
 
+import com.rest.training.exception.ErrorCodes;
+
 @Provider
 public class ConstraintExceptionMapper implements ExceptionMapper<ConstraintViolationException> {
     
 
     @Override
     public Response toResponse(ConstraintViolationException exception) {
-        List<String> validationErrors = exception.getConstraintViolations()
+        List<ApiError> validationErrors = exception.getConstraintViolations()
                                             .stream()
-                                            .map(ConstraintViolation::getMessage)
+                                            .map(c -> {
+                                                ErrorCodes err = null;
+                                                try {
+                                                    err = ErrorCodes.fromCode(c.getMessage());
+                                                } catch (IllegalArgumentException e) {
+                                                    err = ErrorCodes.NOT_FOUND;
+                                                }
+                                                return new ApiError(err.getCode(), err.getMessage());
+                                            })
                                             .collect(Collectors.toList()); 
         return Response.status(Status.BAD_REQUEST)
                 .entity(validationErrors)

@@ -14,7 +14,7 @@ import lombok.NoArgsConstructor;
 public class CategoryDTO {
 	private Integer id;
 
-	@NotEmpty(message = "Please provide category name")
+	@NotEmpty(message = "40005")
 	private String name;
 	
 }

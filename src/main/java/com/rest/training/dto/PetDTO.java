@@ -19,7 +19,7 @@ import lombok.NoArgsConstructor;
 public class PetDTO {
 
 	private Integer id;
-	@NotBlank(message = "Name should not be empty")
+	@NotBlank(message = "40006")
 	private String name;
 	@NotBlank(message = "Status should not be blank")
 	private String status;
