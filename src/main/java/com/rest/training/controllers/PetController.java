@@ -4,6 +4,7 @@ import java.util.List;
 
 import javax.inject.Inject;
 import javax.validation.Valid;
+import javax.ws.rs.BeanParam;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
@@ -14,18 +15,25 @@ import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.Context;
+import javax.ws.rs.core.Link;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriInfo;
 import javax.ws.rs.core.Response.Status;
+
+import com.rest.training.controllers.pagination.PaginationLinkHeadersBuilder;
+import com.rest.training.dto.PaginatedParams;
 import com.rest.training.dto.PetDTO;
 import com.rest.training.dto.hateoas.LinkVisitor;
 import com.rest.training.dto.hateoas.LinkVisitorImpl;
 import com.rest.training.exception.PetNotFoundException;
+import com.rest.training.pagination.Page;
 import com.rest.training.service.PetService;
 
 @Path("pets")
 public class PetController {
+
+	public static final String X_TOTAL_COUNT = "Total-Count";
 
 	@Inject
 	private PetService petService;
@@ -85,5 +93,18 @@ public class PetController {
 			.build();
 	}
 
+	// /ets/pages?page=10&size=5&search=laskdas 
+	@Path("/pages")
+	@GET
+	@Produces(MediaType.APPLICATION_JSON)
+	public Response findPage(@BeanParam @Valid PaginatedParams paginatedParams) {
+		Page<PetDTO> page = petService.getPage(paginatedParams.getSearch(), paginatedParams.getPage(), paginatedParams.getSize());
+		PaginationLinkHeadersBuilder linksBuilder = new PaginationLinkHeadersBuilder(page.pageCount(), page.currentPage());
+		return Response
+				.ok(page.getContent())
+				.links(linksBuilder.buildLinks(uriInfo).toArray(Link[]::new))
+				.header(X_TOTAL_COUNT, page.totalCount())
+				.build();
+	}
 
 }
