@@ -11,6 +11,8 @@ import com.rest.training.domain.Pet;
 import com.rest.training.dto.PetDTO;
 import com.rest.training.exception.PetNotFoundException;
 import com.rest.training.mappers.PetMapper;
+import com.rest.training.pagination.Page;
+import com.rest.training.pagination.PageImpl;
 import com.rest.training.repo.PetRepository;
 
 // mapstruct y lombok
@@ -63,6 +65,14 @@ public class PetService {
 					.map(mapper::fromEntity)
 					.collect(Collectors.toList());
 		}
+	}
+
+	public Page<PetDTO> getPage(String name, int page, int size) {
+		Page<Pet> paginatedPet = repo.getPage(name, page, size);
+
+		return new PageImpl<>(
+			paginatedPet.getContent().stream().map(mapper::fromEntity).collect(Collectors.toList())
+			, paginatedPet.currentPage(), paginatedPet.pageCount(), paginatedPet.totalCount(), paginatedPet.pageSize());
 	}
 	
 }

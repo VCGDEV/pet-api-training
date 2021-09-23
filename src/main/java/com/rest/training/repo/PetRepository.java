@@ -1,5 +1,6 @@
 package com.rest.training.repo;
 
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -8,6 +9,8 @@ import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 
 import com.rest.training.domain.Pet;
+import com.rest.training.pagination.Page;
+import com.rest.training.pagination.PageImpl;
 
 import org.jvnet.hk2.annotations.Service;
 
@@ -53,5 +56,27 @@ public class PetRepository {
 		return petsDB.values()
 			.stream()
 			.filter(p -> p.getName().equalsIgnoreCase(name)).collect(Collectors.toList());
+	}
+
+	// page > 0 
+	public Page<Pet> getPage(String name, int page, int size) {
+		Collection<Pet> dataset = null;
+
+		if(name != null && !name.trim().isEmpty()) {
+			dataset = petsDB.values().stream()
+						.filter(p -> p.getName().equalsIgnoreCase(name))
+						.collect(Collectors.toList());
+		} else {
+			dataset = petsDB.values();
+		}
+
+		//page = 1 [0, 1, 2 ,3] -> [1, 2] 
+		Collection<Pet> paginated = dataset.stream()
+										.skip((page -1) * size)
+										.limit(size)
+										.collect(Collectors.toList());
+		// TODO calculate page count
+		return new PageImpl<>(paginated, page, paginated.size(), dataset.size(), size);
+
 	}
 }
